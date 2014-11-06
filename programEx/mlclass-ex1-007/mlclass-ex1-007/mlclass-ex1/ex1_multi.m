@@ -51,6 +51,11 @@ fprintf('Normalizing Features ...\n');
 
 [X mu sigma] = featureNormalize(X);
 
+fprintf('mu: \n ');
+fprintf(' %f \n', mu);
+fprintf('sigma: \n');
+fprintf(' %f \n', sigma);
+
 % Add intercept term to X
 X = [ones(m, 1) X];
 
@@ -105,12 +110,12 @@ hold on;
 plot(1:numel(J_history_2), J_history_2, '-r', 'LineWidth', 2);
 plot(1:numel(J_history_3), J_history_3, '-k', 'LineWidth', 2);
 plot(1:numel(J_history_4), J_history_4, '-g', 'LineWidth', 2);
-legend("0.01","0.03","0.1","0.3");
+legend("alpha=0.01","alpha=0.03","alpha=0.1","alpha=0.3");
 
 xlabel('Number of iterations');
 ylabel('Cost J');
 
-
+theta = theta4; 
 % Display gradient descent's result
 fprintf('Theta computed from gradient descent: \n');
 fprintf(' %f \n', theta);
@@ -121,7 +126,9 @@ fprintf('\n');
 % Recall that the first column of X is all-ones. Thus, it does
 % not need to be normalized.
 price = 0; % You should change this
-
+X = ([1650 3] - mu) ./ sigma;   % feature Normalize
+X =  [1 X];
+price = X * theta;
 
 % ============================================================
 
@@ -166,7 +173,8 @@ fprintf('\n');
 % Estimate the price of a 1650 sq-ft, 3 br house
 % ====================== YOUR CODE HERE ======================
 price = 0; % You should change this
-
+X = [1 1650 3];
+price = X * theta;
 
 % ============================================================
 
