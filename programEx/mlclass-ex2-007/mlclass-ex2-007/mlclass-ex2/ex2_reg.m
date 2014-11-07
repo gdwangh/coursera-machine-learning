@@ -95,9 +95,10 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
 % Optimize
 [theta, J, exit_flag] = ...
 	fminunc(@(t)(costFunctionReg(t, X, y, lambda)), initial_theta, options);
-
+	
 % Plot Boundary
 plotDecisionBoundary(theta, X, y);
+
 hold on;
 title(sprintf('lambda = %g', lambda))
 
@@ -112,5 +113,27 @@ hold off;
 p = predict(theta, X);
 
 fprintf('Train Accuracy: %f\n', mean(double(p == y)) * 100);
+
+lambdaList = [0 1 3 10 30 100]
+
+for i=1:6,
+  lambda=lambdaList(i);
+  fprintf('lambda = %g\n', lambda);
+  [theta, J, exit_flag] = ...
+	fminunc(@(t)(costFunctionReg(t, X, y, lambda)), initial_theta, options);
+	% Compute accuracy on our training set
+	p = predict(theta, X);
+	fprintf('Train Accuracy: %f\n', mean(double(p == y)) * 100);
+		
+	hold on;
+	plotDecisionBoundary(theta, X, y);
+	title(sprintf('lambda = %g, Train Accuracy: %f', lambda,mean(double(p == y)) * 100))
+
+	xlabel('Microchip Test 1')
+	ylabel('Microchip Test 2')
+
+	legend('y = 1', 'y = 0', 'Decision boundary')
+	hold off;
+end;
 
 
