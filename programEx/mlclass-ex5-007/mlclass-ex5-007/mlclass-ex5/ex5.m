@@ -25,6 +25,8 @@ clear ; close all; clc
 %
 
 % Load Training Data
+fprintf('=========== Part 1: Loading and Visualizing Data =============\n')
+
 fprintf('Loading and Visualizing Data ...\n')
 
 % Load from ex5data1: 
@@ -46,6 +48,7 @@ pause;
 %  You should now implement the cost function for regularized linear 
 %  regression. 
 %
+fprintf('=========== Part 2: Regularized Linear Regression Cost =============\n')
 
 theta = [1 ; 1];
 J = linearRegCostFunction([ones(m, 1) X], y, theta, 1);
@@ -60,6 +63,7 @@ pause;
 %  You should now implement the gradient for regularized linear 
 %  regression.
 %
+fprintf('=========== Part 3: Regularized Linear Regression Gradient =============\n')
 
 theta = [1 ; 1];
 [J, grad] = linearRegCostFunction([ones(m, 1) X], y, theta, 1);
@@ -80,6 +84,7 @@ pause;
 %  Write Up Note: The data is non-linear, so this will not give a great 
 %                 fit.
 %
+fprintf('=========== Part 4: Train Linear Regression =============\n')
 
 %  Train linear regression with lambda = 0
 lambda = 0;
@@ -103,6 +108,9 @@ pause;
 %  Write Up Note: Since the model is underfitting the data, we expect to
 %                 see a graph with "high bias" -- slide 8 in ML-advice.pdf 
 %
+
+fprintf('=========== Part 5: Learning Curve for Linear Regression =============\n')
+
 
 lambda = 0;
 [error_train, error_val] = ...
@@ -129,6 +137,7 @@ pause;
 %  One solution to this is to use polynomial regression. You should now
 %  complete polyFeatures to map each example into its powers
 %
+fprintf('=========== Part 6: Feature Mapping for Polynomial Regression =============\n')
 
 p = 8;
 
@@ -163,6 +172,7 @@ pause;
 %  lambda = 0. You should try running the code with different values of
 %  lambda to see how the fit and learning curve change.
 %
+fprintf('=========== Part 7: Learning Curve for Polynomial Regression =============\n')
 
 lambda = 0;
 [theta] = trainLinearReg(X_poly, y, lambda);
@@ -177,7 +187,7 @@ title (sprintf('Polynomial Regression Fit (lambda = %f)', lambda));
 
 figure(2);
 [error_train, error_val] = ...
-    learningCurve(X_poly, y, X_poly_val, yval, lambda);
+	learningCurve(X_poly, y, X_poly_val, yval, lambda);
 plot(1:m, error_train, 1:m, error_val);
 
 title(sprintf('Polynomial Regression Learning Curve (lambda = %f)', lambda));
@@ -189,7 +199,7 @@ legend('Train', 'Cross Validation')
 fprintf('Polynomial Regression (lambda = %f)\n\n', lambda);
 fprintf('# Training Examples\tTrain Error\tCross Validation Error\n');
 for i = 1:m
-    fprintf('  \t%d\t\t%f\t%f\n', i, error_train(i), error_val(i));
+	fprintf('  \t%d\t\t%f\t%f\n', i, error_train(i), error_val(i));
 end
 
 fprintf('Program paused. Press enter to continue.\n');
@@ -200,6 +210,7 @@ pause;
 %  lambda on a validation set. You will then use this to select the
 %  "best" lambda value.
 %
+fprintf('=========== Part 8: Validation for Selecting Lambda =============\n')
 
 [lambda_vec, error_train, error_val] = ...
     validationCurve(X_poly, y, X_poly_val, yval);
@@ -218,3 +229,51 @@ end
 
 fprintf('Program paused. Press enter to continue.\n');
 pause;
+
+
+%% =========== Part 9: Computing test set error =============
+fprintf('=========== Part 9: Computing test set error =============\n')
+
+[min_err, idx] = min(error_val);
+lambda = lambda_vec(idx);
+[theta] = trainLinearReg(X_poly, y, lambda);
+[J_test, grad] = linearRegCostFunction(X_poly_test, ytest, theta, 0);   % lambda = 0 when calculate training error
+fprintf('lambda=%f, test_error = %f\n', lambda, J_test);
+
+fprintf('Program paused. Press enter to continue.\n');
+pause;
+
+
+%% =================  Part 10: Plotting learning curves with randomly selected examples ============
+lambda = 0.01;
+[theta] = trainLinearReg(X_poly, y, lambda);
+
+% Plot training data and fit
+figure(1);
+plot(X, y, 'rx', 'MarkerSize', 10, 'LineWidth', 1.5);
+plotFit(min(X), max(X), mu, sigma, theta, p);
+xlabel('Change in water level (x)');
+ylabel('Water flowing out of the dam (y)');
+title (sprintf('Polynomial Regression Fit (lambda = %f)', lambda));
+
+figure(2);
+[error_train, error_val] = ...
+	learningCurveWithRandomSel(X_poly, y, X_poly_val, yval, lambda);
+
+plot(1:m, error_train, 1:m, error_val);
+
+title(sprintf('Polynomial Regression Learning Curve (lambda = %f)', lambda));
+xlabel('Number of training examples')
+ylabel('Error')
+axis([0 13 0 100])
+legend('Train', 'Cross Validation')
+
+fprintf('Polynomial Regression (lambda = %f)\n\n', lambda);
+fprintf('# Training Examples\tTrain Error\tCross Validation Error\n');
+for i = 1:m
+	fprintf('  \t%d\t\t%f\t%f\n', i, error_train(i), error_val(i));
+end
+
+fprintf('Program paused. Press enter to continue.\n');
+pause;
+

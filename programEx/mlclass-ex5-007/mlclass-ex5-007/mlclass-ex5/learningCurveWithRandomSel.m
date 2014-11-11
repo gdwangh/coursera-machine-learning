@@ -1,5 +1,5 @@
 function [error_train, error_val] = ...
-    learningCurve(X, y, Xval, yval, lambda)
+    learningCurveWithRandomSel(X, y, Xval, yval, lambda)
 %LEARNINGCURVE Generates the train and cross validation set errors needed 
 %to plot a learning curve
 %   [error_train, error_val] = ...
@@ -55,16 +55,33 @@ error_val   = zeros(m, 1);
 
 % X: m*(n+1)
 % y: m*1
-% xval: m*(n+1)
-% yval: m*1
+% Xval: k*(n+1)
+% yval: k*1
 
+k = size(Xval, 1);
 for i=1:m,
-  [theta] = trainLinearReg(X(1:i,:), y(1:i,:), 1);   % lambda=1
-  [J, grad] = linearRegCostFunction(X(1:i,:), y(1:i,:), theta, 0);  % lambda=0
-  error_train(i) = J;
+  ki = min(i,k);
+  sum_train_J = 0;
+  sum_val_J = 0;
   
-  [J, grad] = linearRegCostFunction(Xval, yval, theta, 0);    % lambda=0
-  error_val(i) = J;
+  for j=1:50,
+		% Randomly select i data 
+		rand_indices = randperm(m);
+		X_sel = X(rand_indices(1:i), :);
+		y_sel = y(rand_indices(1:i), :);
+		
+		[theta] = trainLinearReg(X_sel, y_sel, 1);   % lambda=1	
+		[J, grad] = linearRegCostFunction(X_sel, y_sel, theta, 0);  % lambda=0
+		sum_train_J = sum_train_J + J;
+		
+		rand_indices = randperm(k);
+		Xval_sel = Xval(rand_indices(1:ki), :);
+		yval_sel = yval(rand_indices(1:ki), :);
+		[J, grad] = linearRegCostFunction(Xval_sel, yval_sel, theta, 0);    % lambda=0
+		sum_val_J = sum_val_J + J;
+  end;
+  error_train(i) = sum_train_J/50;
+  error_val(i) = sum_val_J/50;
 end;
 
 % -------------------------------------------------------------
